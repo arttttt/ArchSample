@@ -1,7 +1,9 @@
 package com.arttttt.archsample.ui.bottomnavigation.di
 
-import com.arttttt.archsample.base.FragmentProvider
 import com.arttttt.archsample.ui.bottomnavigation.BottomNavigationFragment
+import com.arttttt.archsample.ui.cats.di.CatsDependencies
+import com.arttttt.archsample.ui.tabs.cats.di.CatsBottomTabDependencies
+import com.arttttt.archsample.ui.tabs.dogs.di.DogsBottomTabDependencies
 import dagger.Component
 
 @BottomNavigationScope
@@ -13,7 +15,11 @@ import dagger.Component
             BottomNavigationModule::class
         ]
 )
-interface BottomNavigationComponent :FragmentProvider<BottomNavigationFragment> {
+interface BottomNavigationComponent : CatsBottomTabDependencies,
+    DogsBottomTabDependencies,
+    CatsDependencies {
+
+    fun inject(fragment: BottomNavigationFragment)
 
     @Component.Factory
     interface Factory {

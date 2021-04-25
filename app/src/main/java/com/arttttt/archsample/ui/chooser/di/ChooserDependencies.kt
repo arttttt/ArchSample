@@ -1,3 +1,7 @@
 package com.arttttt.archsample.ui.chooser.di
 
-interface ChooserDependencies
+import com.arttttt.archsample.data.network.api.DogsApi
+
+interface ChooserDependencies {
+    fun provideDogsApi(): DogsApi
+}

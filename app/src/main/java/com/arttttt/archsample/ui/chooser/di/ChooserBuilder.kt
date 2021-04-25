@@ -8,11 +8,6 @@ class ChooserBuilder(
 ) : FragmentBuilder<ChooserFragment>(ChooserFragment::class) {
 
     override fun build(): ChooserFragment {
-        return DaggerChooserComponent
-                .factory()
-                .create(
-                        dependencies = dependencies
-                )
-                .fragment()
+        return ChooserFragment(dependencies)
     }
 }

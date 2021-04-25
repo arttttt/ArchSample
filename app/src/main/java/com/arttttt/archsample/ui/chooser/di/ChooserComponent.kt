@@ -1,6 +1,5 @@
 package com.arttttt.archsample.ui.chooser.di
 
-import com.arttttt.archsample.base.FragmentProvider
 import com.arttttt.archsample.ui.chooser.ChooserFragment
 import dagger.Component
 
@@ -13,7 +12,9 @@ import dagger.Component
             ChooserModule::class
         ]
 )
-interface ChooserComponent : FragmentProvider<ChooserFragment> {
+interface ChooserComponent {
+
+    fun inject(fragment: ChooserFragment)
 
     @Component.Factory
     interface Factory {

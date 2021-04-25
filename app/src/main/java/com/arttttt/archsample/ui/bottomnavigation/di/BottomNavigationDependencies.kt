@@ -1,3 +1,7 @@
 package com.arttttt.archsample.ui.bottomnavigation.di
 
-interface BottomNavigationDependencies
+import com.arttttt.archsample.data.network.api.DogsApi
+
+interface BottomNavigationDependencies {
+    fun provideDogsApi(): DogsApi
+}

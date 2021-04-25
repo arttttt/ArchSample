@@ -1,19 +1,54 @@
 package com.arttttt.archsample.ui.tabs.cats
 
 import android.os.Bundle
-import androidx.fragment.app.commit
-import com.arttttt.archsample.R
-import com.arttttt.archsample.ui.fragment1.Fragment1
-import com.arttttt.archsample.ui.tabs.container.TabContainerFragment
+import com.arttttt.archsample.Screens
+import com.arttttt.archsample.base.BackPressedHandler
+import com.arttttt.archsample.base.FragmentFactoryImpl
+import com.arttttt.archsample.base.NavigationFragment
+import com.arttttt.archsample.ui.tabs.cats.di.CatsBottomTabDependencies
+import com.arttttt.archsample.ui.tabs.cats.di.DaggerCatsBottomTabComponent
+import com.github.terrakok.cicerone.NavigatorHolder
+import com.github.terrakok.cicerone.Router
+import javax.inject.Inject
 
-class CatsBottomTabFragment : TabContainerFragment() {
+class CatsBottomTabFragment(
+    private val dependencies: CatsBottomTabDependencies
+) : NavigationFragment(),
+    BackPressedHandler {
+
+    @Inject
+    override lateinit var router: Router
+
+    @Inject
+    override lateinit var navigatorHolder: NavigatorHolder
+
+    override val fragmentFactory: FragmentFactoryImpl
+        get() = requireParentFragment().childFragmentManager.fragmentFactory as FragmentFactoryImpl
+
+    override val rootScreen = Screens.CatsScreen()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+        DaggerCatsBottomTabComponent
+            .factory()
+            .create(dependencies)
+            .inject(this)
 
-        savedInstanceState ?: childFragmentManager.commit {
-            replace(R.id.tab_content_container, Fragment1(), null)
-        }
+        super.onCreate(savedInstanceState)
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        navigatorHolder.setNavigator(appNavigator)
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        navigatorHolder.removeNavigator()
+    }
+
+    override fun onBackPressed(): Boolean {
+        return false
+    }
 }
