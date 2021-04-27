@@ -3,6 +3,8 @@ package com.arttttt.archsample.ui.tabs.cats.di
 import com.arttttt.archsample.di.modules.NavigationModule
 import com.arttttt.archsample.di.scopes.NavigationScope
 import com.arttttt.archsample.ui.tabs.cats.CatsBottomTabFragment
+import com.badoo.mvicore.android.AndroidTimeCapsule
+import dagger.BindsInstance
 import dagger.Component
 
 @NavigationScope
@@ -22,7 +24,10 @@ interface CatsBottomTabComponent {
 
     @Component.Factory
     interface Factory {
-        fun create(dependencies: CatsBottomTabDependencies): CatsBottomTabComponent
+        fun create(
+            dependencies: CatsBottomTabDependencies,
+            @BindsInstance timeCapsule: AndroidTimeCapsule
+        ): CatsBottomTabComponent
     }
 
 }

@@ -8,9 +8,7 @@ import com.arttttt.archsample.R
 import com.arttttt.archsample.Screens
 import com.arttttt.archsample.ui.chooser.di.ChooserDependencies
 import com.arttttt.archsample.ui.chooser.di.DaggerChooserComponent
-import com.arttttt.archsample.utils.requireAppFragment
-import com.github.terrakok.cicerone.Router
-import javax.inject.Inject
+import com.arttttt.archsample.utils.requireNavigationFragment
 
 class ChooserFragment(
     private val dependencies: ChooserDependencies
@@ -30,7 +28,7 @@ class ChooserFragment(
 
         view.findViewById<View>(R.id.button_bottom_navigation).setOnClickListener {
             requireParentFragment().childFragmentManager.commit {
-                requireAppFragment().router.navigateTo(Screens.BottomNavigationScreen())
+                requireNavigationFragment().router.navigateTo(Screens.BottomNavigationScreen())
             }
         }
     }

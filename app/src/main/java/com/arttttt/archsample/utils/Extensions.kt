@@ -4,23 +4,52 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
 import com.arttttt.archsample.appfragment.AppFragment
+import com.arttttt.archsample.base.NavigationFragment
 
-inline fun <reified T: Fragment> FragmentFactory.instantiate(): Fragment {
-    return instantiate(T::class.java.classLoader!!, T::class.java.name)
-}
-
-inline fun <reified T: Fragment> FragmentFactory.instantiateWithArguments(arguments: Bundle): Fragment {
+inline fun <reified T: Fragment> FragmentFactory.instantiate(arguments: Bundle? = null): Fragment {
     return instantiate(T::class.java.classLoader!!, T::class.java.name).apply {
-        this.arguments = arguments
+        arguments?.let(::setArguments)
     }
 }
 
-fun Fragment.getAppFragment(): AppFragment? {
-    return parentFragment as? AppFragment
+fun Fragment.findAppFragment(): AppFragment? {
+    var fragment = parentFragment
+
+    while (fragment != null) {
+        if (fragment is AppFragment) {
+            return fragment
+        }
+
+        fragment = fragment.parentFragment
+    }
+
+    return null
 }
 
 fun Fragment.requireAppFragment(): AppFragment {
-    return parentFragment as AppFragment
+    return checkNotNull(findAppFragment()) {
+        "Can't find AppFragment"
+    }
+}
+
+fun Fragment.findNavigationFragment(): NavigationFragment? {
+    var fragment = parentFragment
+
+    while (fragment != null) {
+        if (fragment is NavigationFragment) {
+            return fragment
+        }
+
+        fragment = fragment.parentFragment
+    }
+
+    return null
+}
+
+fun Fragment.requireNavigationFragment(): NavigationFragment {
+    return checkNotNull(findNavigationFragment()) {
+        "Can't find NavigationFragment"
+    }
 }
 
 fun Fragment.getTopFragment(): Fragment? {

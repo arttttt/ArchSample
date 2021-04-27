@@ -7,6 +7,7 @@ import com.arttttt.archsample.base.FragmentFactoryImpl
 import com.arttttt.archsample.base.NavigationFragment
 import com.arttttt.archsample.ui.tabs.cats.di.CatsBottomTabDependencies
 import com.arttttt.archsample.ui.tabs.cats.di.DaggerCatsBottomTabComponent
+import com.badoo.mvicore.android.AndroidTimeCapsule
 import com.github.terrakok.cicerone.NavigatorHolder
 import com.github.terrakok.cicerone.Router
 import javax.inject.Inject
@@ -27,10 +28,17 @@ class CatsBottomTabFragment(
 
     override val rootScreen = Screens.CatsScreen()
 
+    private lateinit var timeCapsule: AndroidTimeCapsule
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        timeCapsule = AndroidTimeCapsule(savedInstanceState)
+
         DaggerCatsBottomTabComponent
             .factory()
-            .create(dependencies)
+            .create(
+                dependencies = dependencies,
+                timeCapsule = timeCapsule
+            )
             .inject(this)
 
         super.onCreate(savedInstanceState)
@@ -46,6 +54,12 @@ class CatsBottomTabFragment(
         super.onPause()
 
         navigatorHolder.removeNavigator()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        timeCapsule.saveState(outState)
     }
 
     override fun onBackPressed(): Boolean {

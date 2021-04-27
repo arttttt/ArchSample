@@ -5,6 +5,8 @@ import com.arttttt.archsample.di.scopes.NavigationScope
 import com.arttttt.archsample.ui.breedpictures.di.BreedPicturesDependencies
 import com.arttttt.archsample.ui.dogs.di.DogsDependencies
 import com.arttttt.archsample.ui.tabs.dogs.DogsBottomTabFragment
+import com.badoo.mvicore.android.AndroidTimeCapsule
+import dagger.BindsInstance
 import dagger.Component
 
 @NavigationScope
@@ -25,7 +27,10 @@ interface DogsBottomTabComponent : DogsDependencies,
 
     @Component.Factory
     interface Factory {
-        fun create(dependencies: DogsBottomTabDependencies): DogsBottomTabComponent
+        fun create(
+            dependencies: DogsBottomTabDependencies,
+            @BindsInstance timeCapsule: AndroidTimeCapsule
+        ): DogsBottomTabComponent
     }
 
 }

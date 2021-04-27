@@ -1,8 +1,10 @@
 package com.arttttt.archsample.domain.feature
 
+import android.os.Parcelable
 import com.arttttt.archsample.domain.entity.Breed
 import com.arttttt.archsample.domain.repository.DogsRepository
 import com.arttttt.archsample.ui.dogs.di.DogsScope
+import com.badoo.mvicore.android.AndroidTimeCapsule
 import com.badoo.mvicore.element.Actor
 import com.badoo.mvicore.element.Bootstrapper
 import com.badoo.mvicore.element.NewsPublisher
@@ -11,13 +13,15 @@ import com.badoo.mvicore.element.Reducer
 import com.badoo.mvicore.feature.BaseFeature
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
 @DogsScope
 class DogsFeature @Inject constructor(
+    timeCapsule: AndroidTimeCapsule,
     dogsRepository: DogsRepository
 ) : BaseFeature<DogsFeature.Wish, DogsFeature.Action, DogsFeature.Effect, DogsFeature.State, DogsFeature.News>(
-    initialState = State(
+    initialState = timeCapsule[STATE_KEY] ?: State(
         breeds = emptyList()
     ),
     wishToAction = { Action.Execute(it) },
@@ -30,9 +34,20 @@ class DogsFeature @Inject constructor(
     newsPublisher = NewsPublisherImpl()
 ) {
 
+    companion object {
+        private val STATE_KEY = DogsFeature::class.java.name
+    }
+
+    init {
+        timeCapsule.register(STATE_KEY) {
+            state
+        }
+    }
+
+    @Parcelize
     data class State(
         val breeds: List<Breed>
-    )
+    ) : Parcelable
 
     sealed class Wish
 
