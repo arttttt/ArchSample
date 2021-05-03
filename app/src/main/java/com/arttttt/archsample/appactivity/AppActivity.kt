@@ -10,9 +10,8 @@ import androidx.fragment.app.commit
 import com.arttttt.archsample.appactivity.di.AppActivityDependencies
 import com.arttttt.archsample.appactivity.di.DaggerAppActivityComponent
 import com.arttttt.archsample.appfragment.AppFragment
-import com.arttttt.archsample.base.BackPressedHandler
 import com.arttttt.archsample.base.FragmentFactoryImpl
-import com.arttttt.archsample.utils.instantiate
+import com.arttttt.archsample.utils.replace
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
@@ -63,9 +62,10 @@ class AppActivity : AppCompatActivity() {
 
         if (supportFragmentManager.fragments.isEmpty()) {
             supportFragmentManager.commit {
-                val fragment = supportFragmentManager.fragmentFactory.instantiate<AppFragment>()
-                setPrimaryNavigationFragment(fragment)
-                replace(containerId, fragment, PRIMARY_NAVIGATION_FRAGMENT_TAG)
+                replace<AppFragment>(
+                    containerViewId = containerId,
+                    tag = PRIMARY_NAVIGATION_FRAGMENT_TAG
+                )
             }
         }
     }
@@ -78,15 +78,6 @@ class AppActivity : AppCompatActivity() {
                 containerId = containerId
             )
         )
-    }
-
-    override fun onBackPressed() {
-        supportFragmentManager
-            .primaryNavigationFragment
-            ?.let { fragment -> fragment as? BackPressedHandler }
-            ?.onBackPressed()
-            ?.takeIf { it }
-            ?: super.onBackPressed()
     }
 
 }

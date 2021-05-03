@@ -3,6 +3,7 @@ package com.arttttt.archsample.utils
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
+import androidx.fragment.app.FragmentTransaction
 import com.arttttt.archsample.appfragment.AppFragment
 import com.arttttt.archsample.base.NavigationFragment
 
@@ -56,4 +57,12 @@ fun Fragment.getTopFragment(): Fragment? {
     return childFragmentManager
         .fragments
         .lastOrNull { it.isVisible }
+}
+
+inline fun<reified T: Fragment> FragmentTransaction.replace(
+    containerViewId: Int,
+    arguments: Bundle? = null,
+    tag: String? = null
+) {
+    replace(containerViewId, T::class.java, arguments, tag)
 }

@@ -9,12 +9,15 @@ import com.arttttt.archsample.R
 import com.arttttt.archsample.Screens
 import com.arttttt.archsample.base.EqualsDiffCallback
 import com.arttttt.archsample.base.ListDifferAdapter
+import com.arttttt.archsample.base.ListItem
 import com.arttttt.archsample.base.SharedElementTransitionInfo
 import com.arttttt.archsample.ui.breedpictures.adapter.delegates.BreedPictureAdapterDelegate
 import com.arttttt.archsample.ui.breedpictures.di.BreedPicturesDependencies
 import com.arttttt.archsample.ui.breedpictures.di.DaggerBreedPicturesComponent
 import com.arttttt.archsample.utils.findAppFragment
 import com.arttttt.archsample.utils.requireAppFragment
+import com.hannesdorfmann.adapterdelegates4.AdapterDelegate
+import com.hannesdorfmann.adapterdelegates4.ListDelegationAdapter
 import javax.inject.Inject
 
 class BreedPicturesFragment(
@@ -25,9 +28,28 @@ class BreedPicturesFragment(
         const val BREED_ARG = "BREED_ARG"
     }
 
+    open class BaseAdapter(delegates: Set<AdapterDelegate<List<ListItem>>>) : ListDelegationAdapter<List<ListItem>>() {
+        init {
+            items = mutableListOf()
+            delegates.forEach { delegatesManager.addDelegate(it) }
+        }
+
+        override fun setItems(items: List<ListItem>?) {
+            super.setItems(items)
+            notifyDataSetChanged()
+        }
+
+        fun setItems(items: List<ListItem>?, notifyAdapter: Boolean) {
+            super.setItems(items)
+            if (notifyAdapter) {
+                notifyDataSetChanged()
+            }
+        }
+    }
+
     val adapter by lazy {
-        ListDifferAdapter(
-            diffCallback = EqualsDiffCallback(),
+        BaseAdapter(
+            //diffCallback = EqualsDiffCallback(),
             delegates = setOf(
                 BreedPictureAdapterDelegate(
                     onClick = { pictureUri, view ->
@@ -61,7 +83,7 @@ class BreedPicturesFragment(
 
         super.onCreate(savedInstanceState)
         bindings.attachTo(this)
-        findAppFragment()?.postponeEnterTransition()
+        postponeEnterTransition()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -70,10 +92,12 @@ class BreedPicturesFragment(
         view.findViewById<RecyclerView>(R.id.recycler_view)?.let { recyclerView ->
             recyclerView.adapter = adapter
 
+            recyclerView.doOnPreDraw { startPostponedEnterTransition() }
+
             adapter.registerAdapterDataObserver(
                 object : RecyclerView.AdapterDataObserver() {
                     override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
-                        findAppFragment()?.startPostponedEnterTransition()
+                        //startPostponedEnterTransition()
                     }
                 }
             )

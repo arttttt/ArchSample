@@ -8,15 +8,16 @@ import android.widget.FrameLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
 import androidx.fragment.app.FragmentTransaction
+import androidx.transition.AutoTransition
 import androidx.transition.ChangeBounds
 import com.arttttt.archsample.Screens
 import com.arttttt.archsample.SharedElementTransitionOwner
 import com.arttttt.archsample.SharedElementTransitionScreen
 import com.arttttt.archsample.appfragment.di.AppFragmentDependencies
 import com.arttttt.archsample.appfragment.di.DaggerAppFragmentComponent
-import com.arttttt.archsample.base.BackPressedHandler
 import com.arttttt.archsample.base.FragmentFactoryImpl
 import com.arttttt.archsample.base.NavigationFragment
+import com.arttttt.archsample.base.OnBackPressedCallbackImpl
 import com.github.terrakok.cicerone.NavigatorHolder
 import com.github.terrakok.cicerone.Router
 import com.github.terrakok.cicerone.androidx.AppNavigator
@@ -25,8 +26,7 @@ import javax.inject.Inject
 
 class AppFragment(
         private val dependencies: AppFragmentDependencies
-) : NavigationFragment(),
-    BackPressedHandler {
+) : NavigationFragment() {
 
     @Inject
     override lateinit var fragmentFactory: FragmentFactoryImpl
@@ -50,17 +50,18 @@ class AppFragment(
                 nextFragment: Fragment
             ) {
                 if (screen is SharedElementTransitionScreen && nextFragment is SharedElementTransitionOwner && currentFragment != null) {
-                    nextFragment.sharedElementEnterTransition = ChangeBounds()
-                    nextFragment.sharedElementReturnTransition = ChangeBounds()
+                    nextFragment.sharedElementEnterTransition = AutoTransition()
+                    //nextFragment.sharedElementReturnTransition = AutoTransition()
 
-                    currentFragment.sharedElementEnterTransition = ChangeBounds()
-                    currentFragment.sharedElementReturnTransition = ChangeBounds()
+                    //currentFragment.sharedElementEnterTransition = AutoTransition()
+                    currentFragment.sharedElementReturnTransition = AutoTransition()
+
+                    nextFragment.setSharedElementTransitionInfo(screen.sharedElementTransitionInfo)
 
                     screen.sharedElementTransitionInfo.sharedElements.forEach { view ->
                         fragmentTransaction.addSharedElement(view, view.transitionName)
                     }
 
-                    nextFragment.setSharedElementTransitionInfo(screen.sharedElementTransitionInfo)
                 }
             }
         }
@@ -79,6 +80,15 @@ class AppFragment(
         childFragmentManager.fragmentFactory = fragmentFactory
 
         super.onCreate(savedInstanceState)
+
+        requireActivity().onBackPressedDispatcher.addCallback(
+            this,
+            OnBackPressedCallbackImpl(
+                router = router,
+                fragmentManager = childFragmentManager,
+                lifecycleOwner = this
+            )
+        )
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -101,17 +111,5 @@ class AppFragment(
         super.onPause()
 
         navigatorHolder.removeNavigator()
-    }
-
-    override fun onBackPressed(): Boolean {
-        childFragmentManager
-            .fragments
-            .lastOrNull { it.isVisible }
-            ?.let { it as? BackPressedHandler }
-            ?.onBackPressed()
-            ?.takeIf { it }
-            ?: router.exit()
-
-        return true
     }
 }

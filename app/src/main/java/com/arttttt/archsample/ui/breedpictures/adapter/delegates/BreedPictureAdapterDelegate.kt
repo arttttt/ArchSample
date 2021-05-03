@@ -9,6 +9,7 @@ import com.arttttt.archsample.base.ListItem
 import com.arttttt.archsample.ui.breedpictures.adapter.models.BreedPictureAdapterItem
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.bumptech.glide.request.RequestOptions
 import com.hannesdorfmann.adapterdelegates4.dsl.adapterDelegate
 
 fun BreedPictureAdapterDelegate(
@@ -24,8 +25,7 @@ fun BreedPictureAdapterDelegate(
         Glide
             .with(context)
             .load(item.pictureUri)
-            .centerCrop()
-            .transition(DrawableTransitionOptions.withCrossFade())
+            .apply(RequestOptions().dontTransform())
             .into(imageView)
     }
 }

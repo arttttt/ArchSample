@@ -2,9 +2,9 @@ package com.arttttt.archsample.ui.tabs.cats
 
 import android.os.Bundle
 import com.arttttt.archsample.Screens
-import com.arttttt.archsample.base.BackPressedHandler
 import com.arttttt.archsample.base.FragmentFactoryImpl
 import com.arttttt.archsample.base.NavigationFragment
+import com.arttttt.archsample.base.OnBackPressedCallbackImpl
 import com.arttttt.archsample.ui.tabs.cats.di.CatsBottomTabDependencies
 import com.arttttt.archsample.ui.tabs.cats.di.DaggerCatsBottomTabComponent
 import com.badoo.mvicore.android.AndroidTimeCapsule
@@ -14,8 +14,7 @@ import javax.inject.Inject
 
 class CatsBottomTabFragment(
     private val dependencies: CatsBottomTabDependencies
-) : NavigationFragment(),
-    BackPressedHandler {
+) : NavigationFragment() {
 
     @Inject
     override lateinit var router: Router
@@ -42,6 +41,15 @@ class CatsBottomTabFragment(
             .inject(this)
 
         super.onCreate(savedInstanceState)
+
+        requireActivity().onBackPressedDispatcher.addCallback(
+            this,
+            OnBackPressedCallbackImpl(
+                router = router,
+                fragmentManager = childFragmentManager,
+                lifecycleOwner = this
+            )
+        )
     }
 
     override fun onResume() {
@@ -60,9 +68,5 @@ class CatsBottomTabFragment(
         super.onSaveInstanceState(outState)
 
         timeCapsule.saveState(outState)
-    }
-
-    override fun onBackPressed(): Boolean {
-        return false
     }
 }

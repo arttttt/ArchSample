@@ -28,7 +28,8 @@ class BreedPicturesFeature @Inject constructor(
     ),
     wishToAction = { Action.Execute(it) },
     bootstrapper = BootStrapperImpl(
-        breed = breed
+        breed = breed,
+        isStateRestored = timeCapsule.get<State>(STATE_KEY) != null
     ),
     actor = ActorImpl(
         dogsRepository = dogsRepository
@@ -67,10 +68,15 @@ class BreedPicturesFeature @Inject constructor(
     sealed class News
 
     class BootStrapperImpl(
-        private val breed: Breed
+        private val breed: Breed,
+        private val isStateRestored: Boolean
     ) : Bootstrapper<Action> {
         override fun invoke(): Observable<Action> {
-            return Observable.just(Action.LoadPictures(breed))
+            return if (isStateRestored) {
+                Observable.empty()
+            } else {
+                Observable.just(Action.LoadPictures(breed))
+            }
         }
     }
 

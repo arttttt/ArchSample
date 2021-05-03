@@ -5,12 +5,12 @@ import android.os.Parcelable
 import android.view.ContextMenu
 import android.view.MenuItem
 import android.view.View
+import androidx.activity.addCallback
 import androidx.appcompat.view.menu.MenuItemImpl
 import androidx.core.view.get
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import com.arttttt.archsample.R
-import com.arttttt.archsample.base.BackPressedHandler
 import com.arttttt.archsample.base.FragmentFactoryImpl
 import com.arttttt.archsample.ui.bottomnavigation.di.BottomNavigationDependencies
 import com.arttttt.archsample.ui.bottomnavigation.di.DaggerBottomNavigationComponent
@@ -21,8 +21,7 @@ import javax.inject.Inject
 
 class BottomNavigationFragment(
     private val dependencies: BottomNavigationDependencies
-) : Fragment(R.layout.fragment_bottom_navigation),
-    BackPressedHandler {
+) : Fragment(R.layout.fragment_bottom_navigation) {
 
     @Parcelize
     private data class SaveState(
@@ -57,6 +56,10 @@ class BottomNavigationFragment(
 
         childFragmentManager.fragmentFactory = fragmentFactory
         super.onCreate(savedInstanceState)
+
+        /*requireActivity().onBackPressedDispatcher.addCallback(this) {
+            selectedTab?.key?.let(childFragmentManager::findFragmentByTag)
+        }*/
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -102,15 +105,6 @@ class BottomNavigationFragment(
                 selectedTab = selectedTab
             )
         )
-    }
-
-    override fun onBackPressed(): Boolean {
-        return selectedTab
-            ?.key
-            ?.let(childFragmentManager::findFragmentByTag)
-            ?.let { it as? BackPressedHandler }
-            ?.onBackPressed()
-            ?: false
     }
 
     private fun selectTab(tab: Tab) {

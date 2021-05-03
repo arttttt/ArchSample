@@ -2,12 +2,11 @@ package com.arttttt.archsample.ui.tabs.dogs
 
 import android.os.Bundle
 import com.arttttt.archsample.Screens
-import com.arttttt.archsample.base.BackPressedHandler
 import com.arttttt.archsample.base.FragmentFactoryImpl
 import com.arttttt.archsample.base.NavigationFragment
+import com.arttttt.archsample.base.OnBackPressedCallbackImpl
 import com.arttttt.archsample.ui.tabs.dogs.di.DaggerDogsBottomTabComponent
 import com.arttttt.archsample.ui.tabs.dogs.di.DogsBottomTabDependencies
-import com.arttttt.archsample.utils.getTopFragment
 import com.badoo.mvicore.android.AndroidTimeCapsule
 import com.github.terrakok.cicerone.NavigatorHolder
 import com.github.terrakok.cicerone.Router
@@ -15,8 +14,7 @@ import javax.inject.Inject
 
 class DogsBottomTabFragment(
     private val dependencies: DogsBottomTabDependencies
-) : NavigationFragment(),
-    BackPressedHandler {
+) : NavigationFragment() {
 
     @Inject
     override lateinit var router: Router
@@ -42,6 +40,16 @@ class DogsBottomTabFragment(
             .inject(this)
 
         super.onCreate(savedInstanceState)
+
+        requireActivity().onBackPressedDispatcher.addCallback(
+            this,
+            OnBackPressedCallbackImpl(
+                router = router,
+                fragmentManager = childFragmentManager,
+                lifecycleOwner = this
+            )
+        )
+
     }
 
     override fun onResume() {
@@ -60,19 +68,6 @@ class DogsBottomTabFragment(
         super.onSaveInstanceState(outState)
 
         timeCapsule.saveState(outState)
-    }
-
-    override fun onBackPressed(): Boolean {
-        return if (childFragmentManager.backStackEntryCount > 0 || childFragmentManager.fragments.size > 1) {
-            getTopFragment()
-                ?.let { it as? BackPressedHandler }
-                ?.onBackPressed()
-                ?: router.exit()
-
-            true
-        } else {
-            false
-        }
     }
 
 }
