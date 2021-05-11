@@ -1,0 +1,8 @@
+rootProject.name = "MultimoduleArchSample"
+include ':app'
+include ':moduleinjector'
+include ':feature:mainscreen'
+include ':feature:chooserscreen'
+include ':core:dagger'
+include ':core:android'
+include ':feature:ordinarynavigationscreen'
