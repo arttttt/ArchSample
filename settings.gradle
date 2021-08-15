@@ -1,0 +1,17 @@
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+        jcenter() // Warning: this repository is going to shut down soon
+    }
+}
+rootProject.name = "MultimoduleSample"
+include ':app'
+include ':moduleinjector'
+include ':core:dagger2'
+include ':core:navigation'
+include ':feature:main'
+include ':feature:tab1'
+include ':feature:tab2'
+include ':feature:sharedscreen'
